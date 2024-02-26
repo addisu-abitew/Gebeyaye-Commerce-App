@@ -10,6 +10,7 @@ dependencies:
   cached_network_image: ^3.3.1
   flutter:
     sdk: flutter
+  flutter_native_splash: ^2.3.11
   flutter_rating_bar: ^4.0.1
   flutter_svg: ^2.0.10+1
 
@@ -20,3 +21,68 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/
+    - assets/images/
+  fonts:
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/MontserratRomanSemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/MontserratRomanRegular.ttf
+          weight: 400
+        - asset: assets/fonts/MontserratRomanMedium.ttf
+          weight: 500
+        - asset: assets/fonts/MontserratItalicThin.ttf
+          weight: 100
+        - asset: assets/fonts/MontserratRomanExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/MontserratRomanBold.ttf
+          weight: 700
+        - asset: assets/fonts/MontserratRegular.ttf
+          weight: 400
+        - asset: assets/fonts/MontserratSemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/MontserratMedium.ttf
+          weight: 500
+        - asset: assets/fonts/MontserratLight.ttf
+          weight: 300
+    - family: Libre Caslon Text
+      fonts:
+        - asset: assets/fonts/LibreCaslonTextBold.ttf
+          weight: 700
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/PoppinsRegular.ttf
+          weight: 400
+        - asset: assets/fonts/PoppinsSemiBold.ttf
+          weight: 600
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/RobotoRomanMedium.ttf
+          weight: 500
+        - asset: assets/fonts/RobotoRegular.ttf
+          weight: 400
+        - asset: assets/fonts/RobotoRomanRegular.ttf
+          weight: 400
+    - family: Plus Jakarta Sans
+      fonts:
+        - asset: assets/fonts/PlusJakartaSansRomanMedium.ttf
+          weight: 500
+        - asset: assets/fonts/PlusJakartaSansSemiBold.ttf
+          weight: 600
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/images/img_group_34010.png
+  branding: assets/images/img_group_34010.png
+  color_dark: "#121212"
+  image_dark: assets/images/img_group_34010.png
+  branding_dark: assets/images/img_group_34010.png
+
+  android_12:
+    image: assets/images/img_group_34010.png
+    icon_background_color: "#ffffff"
+    image_dark: assets/images/img_group_34010.png
+    icon_background_color_dark: "#121212"
