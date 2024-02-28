@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:gebeyaye/core/app_export.dart';
-import 'package:gebeyaye/core/widgets/custom_elevated_button.dart';
-import 'package:gebeyaye/core/widgets/custom_icon_button.dart';
-import 'package:gebeyaye/core/widgets/custom_text_form_field.dart';
+import 'package:gebeyaye/presentation/core/app_export.dart';
+import 'package:gebeyaye/presentation/core/widgets/custom_elevated_button.dart';
+import 'package:gebeyaye/presentation/core/widgets/custom_icon_button.dart';
+import 'package:gebeyaye/presentation/core/widgets/custom_text_form_field.dart';
 
-class SignInScreen extends StatelessWidget {
+class SignInScreen extends StatefulWidget {
   SignInScreen({super.key});
 
+  @override
+  State<SignInScreen> createState() => _SignInScreenState();
+}
+
+class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController userNameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool isPassObsecured = true;
 
   @override
   Widget build(BuildContext context) {
@@ -56,12 +62,13 @@ class SignInScreen extends StatelessWidget {
                       ),
                       child: CustomTextFormField(
                         controller: userNameController,
-                        hintText: "Username or Email",
+                        labelText: "Username or Email",
                         textInputType: TextInputType.emailAddress,
                         prefix: Container(
                           margin: EdgeInsets.fromLTRB(11.h, 16.v, 3.h, 15.v),
                           child: CustomImageView(
                             imagePath: ImageConstant.imgUser,
+                            color: const Color(0xFF626262),
                             height: 24.adaptSize,
                             width: 24.adaptSize,
                           ),
@@ -69,11 +76,16 @@ class SignInScreen extends StatelessWidget {
                         prefixConstraints: BoxConstraints(
                           maxHeight: 55.v,
                         ),
-                        contentPadding: EdgeInsets.only(
-                          top: 20.v,
-                          right: 30.h,
-                          bottom: 20.v,
-                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Enter Username or Email';
+                          }
+                          return RegExp(
+                                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                  .hasMatch(value)
+                              ? null
+                              : 'Invalid Email';
+                        },
                       ),
                     ),
                     SizedBox(height: 31.v),
@@ -91,6 +103,7 @@ class SignInScreen extends StatelessWidget {
                           margin: EdgeInsets.fromLTRB(15.h, 17.v, 11.h, 18.v),
                           child: CustomImageView(
                             imagePath: ImageConstant.imgTrophy,
+                            color: const Color(0xFF626262),
                             height: 20.v,
                             width: 16.h,
                           ),
@@ -98,30 +111,39 @@ class SignInScreen extends StatelessWidget {
                         prefixConstraints: BoxConstraints(
                           maxHeight: 55.v,
                         ),
-                        suffix: Container(
-                          margin: EdgeInsets.fromLTRB(30.h, 18.v, 16.h, 17.v),
-                          child: CustomImageView(
-                            imagePath: ImageConstant.imgEye,
-                            height: 20.adaptSize,
-                            width: 20.adaptSize,
+                        suffix: GestureDetector(
+                          onTap: () => setState(() {
+                            isPassObsecured = !isPassObsecured;
+                          }),
+                          child: Container(
+                            margin: EdgeInsets.fromLTRB(30.h, 18.v, 16.h, 17.v),
+                            child: Icon(
+                              isPassObsecured
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined,
+                              size: 22.adaptSize,
+                            ),
                           ),
                         ),
                         suffixConstraints: BoxConstraints(
                           maxHeight: 55.v,
                         ),
-                        obscureText: true,
+                        obscureText: isPassObsecured,
                         contentPadding: EdgeInsets.symmetric(vertical: 20.v),
                       ),
                     ),
-                    SizedBox(height: 10.v),
+                    // SizedBox(height: 10.v),
                     Align(
                       alignment: Alignment.centerRight,
-                      child: Text(
-                        "Forgot Password?",
-                        style: CustomTextStyles.bodySmallPrimary,
+                      child: TextButton(
+                        onPressed: () {},
+                        child: Text(
+                          "Forgot Password?",
+                          style: CustomTextStyles.titleSmallPrimary,
+                        ),
                       ),
                     ),
-                    SizedBox(height: 50.v),
+                    SizedBox(height: 20.v),
                     CustomElevatedButton(
                       text: "Login",
                       margin: EdgeInsets.symmetric(horizontal: 4.h),
@@ -148,21 +170,6 @@ class SignInScreen extends StatelessWidget {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(
-                            left: 10.h,
-                            bottom: 1.v,
-                          ),
-                          child: CustomIconButton(
-                            height: 55.adaptSize,
-                            width: 55.adaptSize,
-                            padding: EdgeInsets.all(15.h),
-                            decoration: IconButtonStyleHelper.outlinePrimary,
-                            child: CustomImageView(
-                              imagePath: ImageConstant.imgApple1,
-                            ),
-                          ),
-                        ),
-                        Padding(
                           padding: EdgeInsets.only(left: 10.h),
                           child: CustomIconButton(
                             height: 56.adaptSize,
@@ -171,6 +178,7 @@ class SignInScreen extends StatelessWidget {
                             decoration: IconButtonStyleHelper.outlinePrimary,
                             child: CustomImageView(
                               imagePath: ImageConstant.imgFacebookAppSymbol,
+                              color: const Color(0xFF3D4DA6),
                             ),
                           ),
                         ),
@@ -186,10 +194,17 @@ class SignInScreen extends StatelessWidget {
                         ),
                         Padding(
                           padding: EdgeInsets.only(left: 5.h),
-                          child: Text(
-                            "Sign Up",
-                            style: CustomTextStyles.titleSmallPrimary.copyWith(
-                              decoration: TextDecoration.underline,
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.of(context)
+                                  .pushNamed(AppRoutes.signUpScreen);
+                            },
+                            child: Text(
+                              "Sign Up",
+                              style:
+                                  CustomTextStyles.titleSmallPrimary.copyWith(
+                                decoration: TextDecoration.underline,
+                              ),
                             ),
                           ),
                         ),

@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:gebeyaye/core/app_export.dart';
-import 'package:gebeyaye/core/widgets/custom_elevated_button.dart';
-import 'package:gebeyaye/core/widgets/custom_icon_button.dart';
-import 'package:gebeyaye/core/widgets/custom_text_form_field.dart';
+import 'package:flutter/rendering.dart';
+import 'package:gebeyaye/presentation/core/app_export.dart';
+import 'package:gebeyaye/presentation/core/widgets/custom_elevated_button.dart';
+import 'package:gebeyaye/presentation/core/widgets/custom_icon_button.dart';
+import 'package:gebeyaye/presentation/core/widgets/custom_text_form_field.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
-class SignUpScreen extends StatelessWidget {
-  SignUpScreen({Key? key})
-      : super(
-          key: key,
-        );
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
+  @override
+  State<SignUpScreen> createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController userNameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmpasswordController = TextEditingController();
+  final TextEditingController confirmpasswordController =
+      TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool isPassObsecured = true;
+  bool isConfirmPassObsecured = true;
 
   @override
   Widget build(BuildContext context) {
@@ -71,9 +78,12 @@ class SignUpScreen extends StatelessWidget {
                                 style: CustomTextStyles.bodySmallff676767,
                               ),
                               TextSpan(
-                                text:
-                                    "Register button, you agree to the public offer",
+                                text: "Create button",
                                 style: CustomTextStyles.bodySmallffff4b26,
+                              ),
+                              TextSpan(
+                                text: ", you agree to Terms and Policies.",
+                                style: CustomTextStyles.bodySmallff676767,
                               ),
                             ],
                           ),
@@ -95,6 +105,17 @@ class SignUpScreen extends StatelessWidget {
                         Padding(
                           padding: EdgeInsets.only(bottom: 2.v),
                           child: CustomIconButton(
+                            onTap: () async {
+                              try {
+                                GoogleSignInAccount? gUser =
+                                    await GoogleSignIn().signIn();
+                                GoogleSignInAuthentication gAuth =
+                                    await gUser!.authentication;
+                                print(gAuth.accessToken);
+                              } catch (e) {
+                                print(e);
+                              }
+                            },
                             height: 54.adaptSize,
                             width: 54.adaptSize,
                             padding: EdgeInsets.all(15.h),
@@ -105,28 +126,19 @@ class SignUpScreen extends StatelessWidget {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(
-                            left: 10.h,
-                            bottom: 1.v,
-                          ),
-                          child: CustomIconButton(
-                            height: 55.adaptSize,
-                            width: 55.adaptSize,
-                            padding: EdgeInsets.all(15.h),
-                            decoration: IconButtonStyleHelper.outlinePrimary,
-                            child: CustomImageView(
-                              imagePath: ImageConstant.imgApple1,
-                            ),
-                          ),
-                        ),
-                        Padding(
                           padding: EdgeInsets.only(left: 10.h),
                           child: CustomIconButton(
+                            onTap: () {
+                              try {} catch (e) {
+                                print(e);
+                              }
+                            },
                             height: 56.adaptSize,
                             width: 56.adaptSize,
                             padding: EdgeInsets.all(15.h),
                             decoration: IconButtonStyleHelper.outlinePrimary,
                             child: CustomImageView(
+                              color: const Color(0xFF3D4DA6),
                               imagePath: ImageConstant.imgFacebookAppSymbol,
                             ),
                           ),
@@ -134,20 +146,22 @@ class SignUpScreen extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: 29.v),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 43.h),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "I Already Have an Account",
-                            style: CustomTextStyles.bodyMediumPoppinsGray70001,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "I Already Have an Account",
+                          style: CustomTextStyles.bodyMediumPoppinsGray70001,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                            bottom: 3.v,
                           ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                              left: 5.h,
-                              bottom: 3.v,
-                            ),
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pushNamedAndRemoveUntil(
+                                  AppRoutes.signInScreen, (route) => false);
+                            },
                             child: Text(
                               "Login",
                               style:
@@ -156,8 +170,8 @@ class SignUpScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                     SizedBox(height: 5.v),
                   ],
@@ -174,12 +188,13 @@ class SignUpScreen extends StatelessWidget {
   Widget _buildUserName(BuildContext context) {
     return CustomTextFormField(
       controller: userNameController,
-      hintText: "Username or Email",
+      labelText: "Username or Email",
       textInputType: TextInputType.emailAddress,
       prefix: Container(
         margin: EdgeInsets.fromLTRB(11.h, 16.v, 3.h, 15.v),
         child: CustomImageView(
           imagePath: ImageConstant.imgUser,
+          color: const Color(0XFF626262),
           height: 24.adaptSize,
           width: 24.adaptSize,
         ),
@@ -187,11 +202,16 @@ class SignUpScreen extends StatelessWidget {
       prefixConstraints: BoxConstraints(
         maxHeight: 55.v,
       ),
-      contentPadding: EdgeInsets.only(
-        top: 20.v,
-        right: 30.h,
-        bottom: 20.v,
-      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Enter Username or Email';
+        }
+        return RegExp(
+                    r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                .hasMatch(value)
+            ? null
+            : 'Invalid Email';
+      },
     );
   }
 
@@ -199,12 +219,13 @@ class SignUpScreen extends StatelessWidget {
   Widget _buildPassword(BuildContext context) {
     return CustomTextFormField(
       controller: passwordController,
-      hintText: "Password",
+      labelText: "Password",
       textInputType: TextInputType.visiblePassword,
       prefix: Container(
         margin: EdgeInsets.fromLTRB(15.h, 17.v, 11.h, 18.v),
         child: CustomImageView(
           imagePath: ImageConstant.imgTrophy,
+          color: const Color(0XFF626262),
           height: 20.v,
           width: 16.h,
         ),
@@ -214,17 +235,31 @@ class SignUpScreen extends StatelessWidget {
       ),
       suffix: Container(
         margin: EdgeInsets.fromLTRB(30.h, 18.v, 16.h, 17.v),
-        child: CustomImageView(
-          imagePath: ImageConstant.imgEye,
-          height: 20.adaptSize,
-          width: 20.adaptSize,
+        child: GestureDetector(
+          onTap: () => setState(() {
+            isPassObsecured = !isPassObsecured;
+          }),
+          child: Icon(
+            isPassObsecured
+                ? Icons.visibility_outlined
+                : Icons.visibility_off_outlined,
+            color: const Color(0xFF626262),
+            size: 20.adaptSize,
+          ),
         ),
       ),
       suffixConstraints: BoxConstraints(
         maxHeight: 55.v,
       ),
-      obscureText: true,
-      contentPadding: EdgeInsets.symmetric(vertical: 20.v),
+      obscureText: isPassObsecured,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Enter Password';
+        } else if (value.length < 6) {
+          return 'Too Short Password';
+        }
+        return null;
+      },
     );
   }
 
@@ -232,13 +267,14 @@ class SignUpScreen extends StatelessWidget {
   Widget _buildConfirmpassword(BuildContext context) {
     return CustomTextFormField(
       controller: confirmpasswordController,
-      hintText: "ConfirmPassword",
+      labelText: "Confirm Password",
       textInputAction: TextInputAction.done,
       textInputType: TextInputType.visiblePassword,
       prefix: Container(
         margin: EdgeInsets.fromLTRB(15.h, 17.v, 11.h, 18.v),
         child: CustomImageView(
           imagePath: ImageConstant.imgTrophy,
+          color: const Color(0XFF626262),
           height: 20.v,
           width: 16.h,
         ),
@@ -248,23 +284,38 @@ class SignUpScreen extends StatelessWidget {
       ),
       suffix: Container(
         margin: EdgeInsets.fromLTRB(30.h, 18.v, 16.h, 17.v),
-        child: CustomImageView(
-          imagePath: ImageConstant.imgEye,
-          height: 20.adaptSize,
-          width: 20.adaptSize,
+        child: GestureDetector(
+          onTap: () => setState(() {
+            isConfirmPassObsecured = !isConfirmPassObsecured;
+          }),
+          child: Icon(
+            isConfirmPassObsecured
+                ? Icons.visibility_outlined
+                : Icons.visibility_off_outlined,
+            color: const Color(0xFF626262),
+            size: 20.adaptSize,
+          ),
         ),
       ),
       suffixConstraints: BoxConstraints(
         maxHeight: 55.v,
       ),
-      obscureText: true,
-      contentPadding: EdgeInsets.symmetric(vertical: 20.v),
+      obscureText: isConfirmPassObsecured,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Confirm Your Password';
+        } else if (passwordController.text != value) {
+          return "The Password doesn't match";
+        }
+        return null;
+      },
     );
   }
 
   /// Section Widget
   Widget _buildCreateAccount(BuildContext context) {
     return CustomElevatedButton(
+      onPressed: () => _formKey.currentState!.validate(),
       text: "Create Account",
     );
   }
